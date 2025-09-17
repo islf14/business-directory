@@ -3,6 +3,16 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "install": "cd server && npm install && cd ../client && npm install",
+    "build": "npm run server-build && npm run client-build",
+    "server-start": "cd server && npm run start",
+    "server-build": "cd server && npm run build",
+    "server-build-w": "cd server && npm run build-w",
+    "server-start-w": "cd server && npm run start-w",
+    "client-dev": "cd client && npm run dev",
+    "client-build": "cd client && npm run build",
+    "client-start": "cd client && npm run start",
+    "client-lint": "cd client && npm run lint",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
