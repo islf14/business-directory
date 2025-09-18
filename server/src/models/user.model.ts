@@ -1,33 +1,16 @@
-import type { Auth } from '../types.js'
-import bcrypt from 'bcrypt'
-import { Client } from 'pg'
-
-async function connectDB() {
-  const client = new Client()
-  try {
-    await client.connect()
-    return client
-  } catch (e: unknown) {
-    let m
-    if (e instanceof Error) m = e.message
-    throw new Error('error connecting: ' + m)
-  }
-}
+import type { HashAuth } from '../types.js'
+import { connectDB } from './connect.js'
 
 export class UserModel {
   //
 
-  static async create({ input }: { input: Auth }) {
+  static async create({ name, email, hashedPassword }: HashAuth) {
     const client = await connectDB()
-    const { name, email, password } = input
-    console.log(name)
-    const hashedPassword = await bcrypt.hash(password, 10)
-    console.log(hashedPassword)
 
     try {
       const text =
-        'INSERT INTO public.users(name, email, password, approved, created_at, updated_at)	VALUES ( $1, $2, $3, $4, $5, $6) RETURNING *'
-      const values = [name, email, hashedPassword, 1, new Date(), new Date()]
+        'INSERT INTO public.users(name, email, password, created_at, updated_at)	VALUES ($1, $2, $3, $4, $5) RETURNING *'
+      const values = [name, email, hashedPassword, new Date(), new Date()]
       const res = await client.query(text, values)
       return res.rows[0]
     } catch (e: unknown) {

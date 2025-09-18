@@ -1,16 +1,18 @@
 import 'dotenv/config'
 import express, { json } from 'express'
+import cookieParser from 'cookie-parser'
 import { authRoute } from './routes/auth.route.js'
 import { categoryRoute } from './routes/category.route.js'
-// import { corsMiddleware } from './middlewares/cors.js'
+import { authMiddleware } from './middlewares/auth.middleware.js'
 
 const app = express()
 const port = process.env.PORT ?? 3000
 
 // app.use(corsMiddleware())
 app.use(json())
+app.use(cookieParser())
 app.use('/', authRoute)
-app.use('category', categoryRoute)
+app.use('/category', authMiddleware, categoryRoute)
 
 app.get('/w', (_req, res) => {
   console.log('welcome')
