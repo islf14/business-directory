@@ -4,21 +4,24 @@ import Api from '../Api'
 import AuthUser from '../pageauth/AuthUser'
 import { Link } from 'react-router'
 
+type User = {
+  id: string
+  name: string
+}
+
 const UserAll = () => {
   const { getToken } = AuthUser()
-  const [users, setUsers] = useState([])
+  const [users, setUsers] = useState<User[]>([])
 
   useEffect(() => {
+    const getUserAll = async () => {
+      const token = { headers: { Authorization: `Bearer ${getToken()}` } }
+      console.log(token)
+      const response = await Api.getUserAll(token)
+      setUsers(response.data)
+    }
     getUserAll()
-  }, [])
-
-  const getUserAll = async () => {
-    const token = { headers: { Authorization: `Bearer ${getToken()}` } }
-    console.log(token)
-    const response = await Api.getUserAll(token)
-    setUsers(response.data)
-    // console.log(response)
-  }
+  }, [getToken])
 
   return (
     <div className="container bg-light">

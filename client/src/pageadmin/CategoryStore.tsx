@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import Sidebar from './Sidebar'
 import Api from '../Api'
@@ -13,21 +13,25 @@ const CategoryStore = () => {
   const navigate = useNavigate()
   const token = { headers: { Authorization: `Bearer ${getToken()}` } }
 
-  const handleInputChange = async (e) => {
-    let files = e.target.files
-    let reader = new FileReader()
-    reader.readAsDataURL(files[0])
-    reader.onload = (e) => {
-      setUrlfoto(e.target.result)
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (files) {
+      const reader = new FileReader()
+      reader.readAsDataURL(files[0])
+      reader.onload = (e) => {
+        if (e.target && typeof e.target.result === 'string') {
+          setUrlfoto(e.target.result)
+        }
+      }
     }
   }
 
-  const submitStore = async (e) => {
+  const submitStore = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     // console.log({nombre, description, orden, urlfoto});
     await Api.getCategoryStore({ nombre, description, orden, urlfoto }, token)
       .then((response) => {
-        response.status == 200 ? console.log('Creado correctamente') : ''
+        if (response.status == 200) console.log('Creado correctamente')
       })
       .catch((error) => {
         console.log(error)
@@ -81,7 +85,14 @@ const CategoryStore = () => {
                   />
                 </div>
                 <div className="btn-group mt-3">
-                  <Link to={-1} className="btn btn-secondary">
+                  <Link
+                    className="btn btn-secondary"
+                    to={'..'}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      navigate(-1)
+                    }}
+                  >
                     Atras
                   </Link>
                   <button type="submit" className="btn btn-primary">

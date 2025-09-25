@@ -5,7 +5,7 @@ const Category = z.object({
   slug: z.string().optional(),
   description: z.string().min(6),
   menu: z.number().optional(),
-  ord: z.number().optional(),
+  ord: z.number(),
   photo_url: z.url().optional()
 })
 export const validateCategory = (data: any) => {

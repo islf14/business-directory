@@ -5,9 +5,8 @@ const base_api_url = 'http://localhost:3003'
 
 export default {
   //AUTH
-  getRegister: (data: object) =>
-    axios.post(`${base_api_url}/auth/register`, data),
-  getLogin: (data: object) => axios.post(`${base_api_url}/auth/login`, data),
+  getRegister: (data: object) => axios.post(`${base_api_url}/register`, data),
+  getLogin: (data: object) => axios.post(`${base_api_url}/login`, data),
   getLogout: (data: object, token: object) =>
     axios.post(`${base_api_url}/auth/logout`, data, token),
 

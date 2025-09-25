@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import AuthUser from '../pageauth/AuthUser'
 import Sidebar from './Sidebar'
@@ -14,20 +14,27 @@ const CategoryUpdate = () => {
   const [menu, setMenu] = useState(false)
   const [verfoto, setVerfoto] = useState('foto.jpg')
   const [urlfoto, setUrlfoto] = useState('')
-  const token = { headers: { Authorization: `Bearer ${getToken()}` } }
+  const token = useMemo(
+    () => ({ headers: { Authorization: `Bearer ${getToken()}` } }),
+    [getToken]
+  )
 
-  const handleInputChange = async (e) => {
-    let files = e.target.files
-    let reader = new FileReader()
-    reader.readAsDataURL(files[0])
-    reader.onload = (e) => {
-      setUrlfoto(e.target.result)
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    const reader = new FileReader()
+    if (files) {
+      reader.readAsDataURL(files[0])
+      reader.onload = (e) => {
+        if (e.target && typeof e.target.result === 'string') {
+          setUrlfoto(e.target.result)
+        }
+      }
     }
   }
 
   useEffect(() => {
     const getCategoryById = async () => {
-      Api.getCategoryById(id, token).then(({ data }) => {
+      Api.getCategoryById(Number(id), token).then(({ data }) => {
         // console.log(data)
         setNombre(data.nombre)
         setDescripcion(data.description)
@@ -37,18 +44,18 @@ const CategoryUpdate = () => {
       })
     }
     getCategoryById()
-  }, [])
+  }, [id, token])
 
-  const submitUpdate = async (ev) => {
-    ev.preventDefault()
+  const submitUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     // console.log({nombre, description, orden, menu, urlfoto});
     await Api.getCategoryUpdate(
-      id,
+      Number(id),
       { nombre, description, orden, menu, urlfoto },
       token
     )
       .then((response) => {
-        response.status == 200 ? console.log('Actualizado correctamente') : ''
+        if (response.status == 200) console.log('Actualizado correctamente')
       })
       .catch((error) => {
         console.log(error)
@@ -71,7 +78,7 @@ const CategoryUpdate = () => {
                         type="checkbox"
                         className="form-check-input"
                         checked={menu}
-                        onChange={(e) => setMenu(!menu)}
+                        onChange={() => setMenu(!menu)}
                         role="switch"
                         id="menu"
                       />
@@ -123,7 +130,14 @@ const CategoryUpdate = () => {
                   />
                 </div>
                 <div className="btn-group">
-                  <Link to={-1} className="btn btn-secondary">
+                  <Link
+                    className="btn btn-secondary"
+                    to={'..'}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      navigate(-1)
+                    }}
+                  >
                     Atras
                   </Link>
                   <button type="submit" className="btn btn-primary">

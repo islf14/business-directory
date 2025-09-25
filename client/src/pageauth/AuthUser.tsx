@@ -6,18 +6,24 @@ const AuthUser = () => {
 
   const getToken = () => {
     const tokenString = sessionStorage.getItem('token')
-    const token = JSON.parse(tokenString ?? '')
-    return token
+    if (tokenString) {
+      const token = JSON.parse(tokenString)
+      return token
+    } else return ''
   }
   const getUser = () => {
     const userString = sessionStorage.getItem('user')
-    const user = JSON.parse(userString ?? '')
-    return user
+    if (userString) {
+      const user = JSON.parse(userString)
+      return user
+    } else return ''
   }
   const getRol = () => {
     const rolString = sessionStorage.getItem('rol')
-    const rol = JSON.parse(rolString ?? '')
-    return rol
+    if (rolString) {
+      const rol = JSON.parse(rolString)
+      return rol
+    } else return ''
   }
 
   const [token, setToken] = useState(getToken())

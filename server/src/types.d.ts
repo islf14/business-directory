@@ -21,3 +21,9 @@ export type CategoryUpdate = {
   field: string
   value: (number | string | Date)[]
 }
+
+export type StaticOrigin =
+  | boolean
+  | string
+  | RegExp
+  | Array<boolean | string | RegExp>

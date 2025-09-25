@@ -1,1 +1,22 @@
 @import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-Dark-Grayish-Blue: hsl(228, 12%, 44%);
+  --color-Desaturated-Blue: hsl(228, 34%, 66%);
+  --color-Toggle: hsl(230, 22%, 74%);
+  --color-Light-Grayish-Blue: hsl(227, 47%, 96%);
+  --color-Toggle-blue: hsl(210, 78%, 56%);
+  --color-Toggle-green: hsl(146, 68%, 55%);
+  --color-Very-Dark-Blue: hsl(230, 17%, 14%);
+}
+
+/* @font-face {
+  font-family: 'Inter';
+  src: url('./assets/fonts/Inter/Inter-Variable.ttf') format('ttf');
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+} */

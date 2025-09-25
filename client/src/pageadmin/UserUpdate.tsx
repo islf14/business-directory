@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import Api from '../Api'
 import Sidebar from './Sidebar'
@@ -11,22 +11,27 @@ const UserUpdate = () => {
   const { id } = useParams()
   const [name, setName] = useState('')
   const [aprobado, setAprobado] = useState(false)
-  const token = { headers: { Authorization: `Bearer ${getToken()}` } }
+  const token = useMemo(
+    () => ({
+      headers: { Authorization: `Bearer ${getToken()}` }
+    }),
+    [getToken]
+  )
 
   useEffect(() => {
     const getUserById = async () => {
-      Api.getUserById(id, token).then(({ data }) => {
+      Api.getUserById(Number(id), token).then(({ data }) => {
         setName(data.name)
         setAprobado(data.aprobado)
       })
     }
     getUserById()
-  }, [])
+  }, [id, token])
 
-  const submitUpdate = async (ev) => {
-    ev.preventDefault()
+  const submitUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     console.log({ aprobado })
-    await Api.getUserUpdate(id, { aprobado }, token)
+    await Api.getUserUpdate(Number(id), { aprobado }, token)
     navigate('/admin/user')
   }
 
@@ -54,7 +59,7 @@ const UserUpdate = () => {
                       type="checkbox"
                       className="form-check-input"
                       checked={aprobado}
-                      onChange={(e) => setAprobado(!aprobado)}
+                      onChange={() => setAprobado(!aprobado)}
                       role="swith"
                       id="menu"
                     />
@@ -64,7 +69,14 @@ const UserUpdate = () => {
                   </div>
                 </div>
                 <div className="btn-group">
-                  <Link to={-1} className="btn btn-secondary">
+                  <Link
+                    className="btn btn-secondary"
+                    to={'..'}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      navigate(-1)
+                    }}
+                  >
                     Atras
                   </Link>
                   <button type="submit" className="btn btn-primary">

@@ -1,15 +1,24 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Sidebar from './Sidebar'
 import AuthUser from '../pageauth/AuthUser'
 import { Link } from 'react-router'
 import Api from '../Api'
 
+type Category = {
+  id: number
+  name: string
+  ord: number
+}
+
 const CategoryAll = () => {
   const { getToken } = AuthUser()
-  const [categories, setCategories] = useState([])
-  const token = { headers: { Authorization: `Bearer ${getToken()}` } }
+  const [categories, setCategories] = useState<Category[]>([])
+  const token = useMemo(
+    () => ({ headers: { Authorization: `Bearer ${getToken()}` } }),
+    [getToken]
+  )
 
-  const getCategoryAll = async () => {
+  const getCategoryAll = useCallback(async () => {
     await Api.getCategoryAll(token)
       .then((response) => {
         // console.log(response)
@@ -28,18 +37,18 @@ const CategoryAll = () => {
       .catch((error) => {
         console.log(error)
       })
-  }
+  }, [token])
 
   useEffect(() => {
     getCategoryAll()
-  }, [])
+  }, [getCategoryAll])
 
-  const deleteCategoryById = async (id) => {
+  const deleteCategoryById = async (id: number) => {
     const isDelete = window.confirm('Borrar Categoría?')
     if (isDelete) {
       await Api.getCategoryDelete(id, token)
         .then((response) => {
-          response.status == 200 ? console.log('Eliminado correctamente') : ''
+          if (response.status == 200) console.log('Eliminado correctamente')
         })
         .catch((error) => {
           console.log(error)
@@ -72,8 +81,8 @@ const CategoryAll = () => {
                     : categories.map((category) => {
                         return (
                           <tr key={category.id}>
-                            <td>{category.orden}</td>
-                            <td>{category.nombre}</td>
+                            <td>{category.ord}</td>
+                            <td>{category.name}</td>
                             <td>
                               <Link
                                 className="btn btn-primary"

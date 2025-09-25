@@ -4,14 +4,17 @@ import cookieParser from 'cookie-parser'
 import { authRoute } from './routes/auth.route.js'
 import { categoryRoute } from './routes/category.route.js'
 import { authMiddleware } from './middlewares/auth.middleware.js'
+import { userRoute } from './routes/user.route.js'
+import { corsMiddleware } from './middlewares/cors.middleware.js'
 
 const app = express()
 const port = process.env.PORT ?? 3000
 
-// app.use(corsMiddleware())
+app.use(corsMiddleware())
 app.use(json())
 app.use(cookieParser())
 app.use('/', authRoute)
+app.use('/user', authMiddleware, userRoute)
 app.use('/category', authMiddleware, categoryRoute)
 
 app.get('/w', (_req, res) => {
