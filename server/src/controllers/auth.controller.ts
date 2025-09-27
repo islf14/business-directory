@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import { validateLogin, validateRegister } from './auth.validator.js'
 import type { Auth } from '../types.js'
 import { UserModel } from '../models/user.model.js'
+import { RolModel } from '../models/rol.mole.js'
 
 export class AuthController {
   //
@@ -74,22 +75,32 @@ export class AuthController {
     }
 
     try {
+      // find user in db
       const user = await UserModel.findByEmail({ email: values.email })
       if (!user) {
         res.status(400).json({ message: 'Invalid email or password' })
         return
       }
+      // validate password
       const valid = await bcrypt.compare(values.password, user.password)
       if (!valid) {
         res.status(400).json({ message: 'Invalid email or password' })
         return
       }
+      // get roles
+      const rol = await RolModel.roleNameByUserId({ id: user.id })
 
       const token = jwt.sign(
         { id: user.id, email: user.email, name: user.name },
         process.env.JWT_SECRET ?? '',
         { expiresIn: '1h' }
       )
+      const { password, ...userWithoutPassword } = user
+      const data = {
+        user: userWithoutPassword,
+        rol,
+        token
+      }
       res
         .status(200)
         .cookie('access_business', token, {
@@ -98,7 +109,7 @@ export class AuthController {
           sameSite: 'strict',
           secure: process.env.NODE_ENV === 'production'
         })
-        .json({ token })
+        .json(data)
     } catch (e: unknown) {
       let m: string = ''
       if (e instanceof Error) m = e.message

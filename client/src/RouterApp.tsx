@@ -40,8 +40,8 @@ function RouterApp() {
             <Route path="company" element={<CompanyAll />} />
           </Route>
           <Route path="/client" element={<LayoutClient />}>
-            <Route index element={<PageHome />} />
             <Route index element={<PanelClient />} />
+            <Route path="homme" element={<PageHome />} />
           </Route>
         </Route>
       </Routes>

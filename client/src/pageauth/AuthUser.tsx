@@ -1,10 +1,11 @@
-import { useState } from 'react'
+// import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
 const AuthUser = () => {
   const navigate = useNavigate()
 
   const getToken = () => {
+    console.log('->getToken')
     const tokenString = sessionStorage.getItem('token')
     if (tokenString) {
       const token = JSON.parse(tokenString)
@@ -26,33 +27,27 @@ const AuthUser = () => {
     } else return ''
   }
 
-  const [token, setToken] = useState(getToken())
-  const [user, setUser] = useState(getUser())
-  const [rol, setRol] = useState(getRol())
+  // const [rol, setRol] = useState(getRol())
+  // console.log(rol)
 
   const saveToken = (token: string, user: object, rol: string) => {
     sessionStorage.setItem('token', JSON.stringify(token))
     sessionStorage.setItem('user', JSON.stringify(user))
-    sessionStorage.setItem('rol', JSON.stringify(rol))
+    sessionStorage.setItem('rol', JSON.stringify(rol.toLowerCase()))
 
-    setToken(token)
-    setUser(user)
-    setRol(rol)
-
-    if (getRol() === 'admin') navigate('/admin')
-    if (getRol() === 'client') navigate('/client')
+    // setRol(rol)
   }
 
   const getLogout = () => {
     sessionStorage.clear()
-    navigate('/')
+    navigate('/login')
   }
 
   return {
     setToken: saveToken,
-    token,
-    user,
-    rol,
+    // token,
+    // user,
+    // rol,
     getToken,
     getRol,
     getUser,

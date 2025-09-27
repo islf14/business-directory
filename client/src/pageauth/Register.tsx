@@ -19,11 +19,14 @@ const Register = () => {
   // width button e: React.MouseEvent<HTMLButtonElement>
   const submitRegistro = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    Api.getRegister({ name, email, password }).then(({ data }) => {
-      if (data.success) {
+    Api.getRegister({ name, email, password })
+      .then(({ data }) => {
+        console.log(data)
         navigate('/login')
-      }
-    })
+      })
+      .catch(({ response }) => {
+        console.log(response)
+      })
   }
 
   return (

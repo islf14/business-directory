@@ -4,6 +4,25 @@ import { connectDB } from './connect.js'
 export class UserModel {
   //
 
+  static async findAll() {
+    const client = await connectDB()
+    try {
+      const text =
+        'SELECT id, name, email, created_at, updated_at FROM public.users'
+      const res = await client.query(text)
+      return res.rows
+    } catch (e: unknown) {
+      let m
+      if (e instanceof Error) m = e.message
+      console.log(m)
+      throw new Error('error findAll: ' + m)
+    } finally {
+      await client.end()
+    }
+  }
+
+  //
+
   static async create({ name, email, hashedPassword }: HashAuth) {
     const client = await connectDB()
 
@@ -41,4 +60,6 @@ export class UserModel {
       await client.end()
     }
   }
+
+  //
 }

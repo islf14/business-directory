@@ -8,24 +8,24 @@ export default {
   getRegister: (data: object) => axios.post(`${base_api_url}/register`, data),
   getLogin: (data: object) => axios.post(`${base_api_url}/login`, data),
   getLogout: (data: object, token: object) =>
-    axios.post(`${base_api_url}/auth/logout`, data, token),
+    axios.post(`${base_api_url}/logout`, data, token),
 
   //ROL ADMIN
-  getUserAll: (token: object) => axios.get(`${base_api_url}/admin/user`, token),
+  getUserAll: (token: object) => axios.get(`${base_api_url}/user`, token),
   getUserById: (id: number, token: object) =>
-    axios.get(`${base_api_url}/admin/user/${id}`, token),
+    axios.get(`${base_api_url}/user/${id}`, token),
   getUserUpdate: (id: number, data: object, token: object) =>
-    axios.put(`${base_api_url}/admin/user/${id}`, data, token),
+    axios.put(`${base_api_url}/user/${id}`, data, token),
 
   //CATEGORY
   getCategoryAll: (token: object) =>
-    axios.get(`${base_api_url}/admin/category`, token),
+    axios.get(`${base_api_url}/category`, token),
   getCategoryStore: (data: object, token: object) =>
-    axios.post(`${base_api_url}/admin/category`, data, token),
+    axios.post(`${base_api_url}/category`, data, token),
   getCategoryById: (id: number, token: object) =>
-    axios.get(`${base_api_url}/admin/category/${id}`, token),
+    axios.get(`${base_api_url}/category/${id}`, token),
   getCategoryUpdate: (id: number, data: object, token: object) =>
-    axios.put(`${base_api_url}/admin/category/${id}`, data, token),
+    axios.put(`${base_api_url}/category/${id}`, data, token),
   getCategoryDelete: (id: number, token: object) =>
-    axios.delete(`${base_api_url}/admin/category/${id}`, token)
+    axios.delete(`${base_api_url}/category/${id}`, token)
 }

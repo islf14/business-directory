@@ -2,17 +2,17 @@ import { useEffect, useState } from 'react'
 import AuthUser from './AuthUser'
 import { useNavigate } from 'react-router'
 import Api from '../Api'
-import axios from 'axios'
 import { Link } from 'react-router'
+import { useFormInput } from '../components/UseFormInput'
 
 const Login = () => {
+  console.log('declare Login')
   const { setToken, getToken } = AuthUser()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const emailProps = useFormInput('')
+  const passwordProps = useFormInput('')
   const [message, setMessage] = useState('')
   const navigate = useNavigate()
 
-  // console.log('en inicio login') //cambiar que cada tecla se cambie
   useEffect(() => {
     if (getToken()) {
       navigate('/')
@@ -21,19 +21,18 @@ const Login = () => {
 
   const submitLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log('in submit')
-    await axios.get('/sanctum/csrf-cookie').then(() => {
-      Api.getLogin({ email, password }).then(({ data }) => {
-        if (data.success) {
-          console.log(data.message)
-          console.log(data.token)
-          setToken(data.token, data.user, data.user.roles[0].name)
+    Api.getLogin({ email: emailProps.value, password: passwordProps.value })
+      .then(({ data }) => {
+        if (data && data.token && data.user && data.rol) {
+          setToken(data.token, data.user, data.rol.name)
+          navigate(`/${data.rol.name.toLowerCase()}`)
         } else {
-          console.log(data.message)
-          setMessage(data.message)
+          setMessage('Incomplete session')
         }
       })
-    })
+      .catch(({ response }) => {
+        setMessage(response.data.message)
+      })
   }
 
   return (
@@ -60,8 +59,7 @@ const Login = () => {
                   type="email"
                   name="email"
                   id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  {...emailProps}
                   autoComplete="username"
                   className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="user@email.com"
@@ -82,8 +80,7 @@ const Login = () => {
                   placeholder="••••••••"
                   minLength={4}
                   maxLength={50}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  {...passwordProps}
                   className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   required
                 />
@@ -120,7 +117,7 @@ const Login = () => {
               >
                 Sign in
               </button>
-              <p>{message}</p>
+              <p className="text-red-600">{message}</p>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Don’t have an account yet?{' '}
                 <Link

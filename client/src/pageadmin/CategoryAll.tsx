@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import Sidebar from './Sidebar'
 import AuthUser from '../pageauth/AuthUser'
 import { Link } from 'react-router'
 import Api from '../Api'
@@ -11,6 +10,7 @@ type Category = {
 }
 
 const CategoryAll = () => {
+  console.log('in declare CategoryAll')
   const { getToken } = AuthUser()
   const [categories, setCategories] = useState<Category[]>([])
   const token = useMemo(
@@ -21,7 +21,7 @@ const CategoryAll = () => {
   const getCategoryAll = useCallback(async () => {
     await Api.getCategoryAll(token)
       .then((response) => {
-        // console.log(response)
+        console.log(response)
         if (typeof response.data !== 'string') {
           try {
             const type = Object.prototype.toString.call(response.data)
@@ -40,6 +40,7 @@ const CategoryAll = () => {
   }, [token])
 
   useEffect(() => {
+    console.log('in useEffect')
     getCategoryAll()
   }, [getCategoryAll])
 
@@ -48,6 +49,7 @@ const CategoryAll = () => {
     if (isDelete) {
       await Api.getCategoryDelete(id, token)
         .then((response) => {
+          console.log(response)
           if (response.status == 200) console.log('Eliminado correctamente')
         })
         .catch((error) => {
@@ -58,54 +60,49 @@ const CategoryAll = () => {
   }
 
   return (
-    <div className="container bg-light">
-      <div className="row">
-        <Sidebar />
-        <div className="col-sm-9">
-          <div className="card">
-            <div className="card-body">
-              <Link to={'/admin/category/create'} className="btn btn-primary">
-                Agregar categoría
-              </Link>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Orden</th>
-                    <th>Nombre</th>
-                    <th>Acción</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {!categories
-                    ? 'loading...'
-                    : categories.map((category) => {
-                        return (
-                          <tr key={category.id}>
-                            <td>{category.ord}</td>
-                            <td>{category.name}</td>
-                            <td>
-                              <Link
-                                className="btn btn-primary"
-                                to={`/admin/category/edit/${category.id}`}
-                              >
-                                Editar
-                              </Link>
-                              <button
-                                className="btn btn-danger"
-                                onClick={() => {
-                                  deleteCategoryById(category.id)
-                                }}
-                              >
-                                Eliminar
-                              </button>
-                            </td>
-                          </tr>
-                        )
-                      })}
-                </tbody>
-              </table>
-            </div>
-          </div>
+    <div className="p-4 md:ml-56">
+      <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
+        <div className="bg-gray-50 dark:bg-gray-800 overflow-auto mb-4">
+          <Link to={'/admin/category/create'} className="btn btn-primary">
+            Add Category
+          </Link>
+          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Name</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {!categories
+                ? 'loading...'
+                : categories.map((category) => {
+                    return (
+                      <tr key={category.id}>
+                        <td>{category.ord}</td>
+                        <td>{category.name}</td>
+                        <td>
+                          <Link
+                            className="btn btn-primary"
+                            to={`/admin/category/edit/${category.id}`}
+                          >
+                            Editar
+                          </Link>
+                          <button
+                            className="btn btn-danger"
+                            onClick={() => {
+                              deleteCategoryById(category.id)
+                            }}
+                          >
+                            Eliminar
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

@@ -1,10 +1,11 @@
 import AuthUser from '../pageauth/AuthUser'
-import Api from '../Api'
-import { useEffect, useRef, useState } from 'react'
+// import Api from '../Api'
+import { useRef } from 'react'
 import { Link } from 'react-router'
-// import { Link } from 'react-router'
+import { ListenDark } from './ListenDark'
 
 export default function Navbar() {
+  console.log('declare NavBar')
   //
   const menuUser = useRef<HTMLDivElement | null>(null)
   const menuButton = useRef<HTMLButtonElement | null>(null)
@@ -16,7 +17,7 @@ export default function Navbar() {
   // listen for click outside the open menu
   document.addEventListener('mousedown', closeOpenMenus)
   function closeOpenMenus(e: MouseEvent) {
-    // console.log('click')
+    console.log('click')
     if (
       !menuButton.current?.contains(e.target as Node) &&
       !menuUser.current?.contains(e.target as Node)
@@ -54,70 +55,19 @@ export default function Navbar() {
   //
 
   const { getToken, getRol, getLogout } = AuthUser()
-  const token = { headers: { Authorization: `Bearer ${getToken()}` } }
+  // const token = { headers: { Authorization: `Bearer ${getToken()}` } }
 
-  const logoutUser = () => {
-    Api.getLogout({}, token)
-      .then((response) => {
-        console.log(response.data.message)
-        getLogout()
-      })
-      .catch((error) => {
-        console.log(error)
-        // getLogout() //usar cuando se solo se  cierra sesión en el servidor
-      })
+  const logoutUser = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault()
+    toggleMenu()
+    getLogout()
   }
 
   //
   // D A R K
 
-  const [darkMode, setDarkMode] = useState<boolean>(getMode)
-  function getMode() {
-    if (localStorage.dark) {
-      if (localStorage.dark === 'true') return true
-      else return false
-    }
-    return (
-      window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
-    )
-  }
-
-  // console.log('->dark:', darkMode)
-  useEffect(() => {
-    // console.log('==>dark:', darkMode)
-    document.documentElement.classList.toggle(
-      'dark',
-      localStorage.dark === 'true' ||
-        (!('dark' in localStorage) &&
-          window.matchMedia('(prefers-color-scheme: dark)').matches)
-    )
-  }, [darkMode])
-
-  // button change Dark
-  const changeMode = () => {
-    setDarkMode(!darkMode)
-    localStorage.dark = !darkMode
-  }
-
-  // button reset, mode system theme
-  function SystemMode() {
-    setDarkMode(
-      window.matchMedia &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches
-    )
-    localStorage.removeItem('dark')
-  }
-
-  // listen to changes in the system theme
-  window
-    .matchMedia('(prefers-color-scheme: dark)')
-    .addEventListener('change', (event) => {
-      if (!('dark' in localStorage)) {
-        // console.log('event')
-        setDarkMode(event.matches)
-      }
-    })
+  const darkModeProps = ListenDark()
+  document.documentElement.classList.toggle('dark', darkModeProps.darkMode)
 
   //
   //
@@ -154,8 +104,8 @@ export default function Navbar() {
             </li>
             <li>
               <a
-                href="#"
-                onClick={logoutUser}
+                href="/logout"
+                onClick={(e) => logoutUser(e)}
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
               >
                 Sign out
@@ -180,7 +130,7 @@ export default function Navbar() {
               type="button"
               className="flex items-center justify-between w-full py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
             >
-              Admin{' '}
+              Options{' '}
               <svg
                 className="w-2.5 h-2.5 ms-2.5"
                 aria-hidden="true"
@@ -208,7 +158,7 @@ export default function Navbar() {
               >
                 <li>
                   <a
-                    href={`/${getRol()}`}
+                    href=""
                     className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                   >
                     Business
@@ -224,12 +174,12 @@ export default function Navbar() {
                 </li>
               </ul>
               <div className="py-1">
-                <a
-                  href={`/${getRol()}`}
+                <Link
+                  to={`/${getRol()}`}
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                 >
-                  Client
-                </a>
+                  {getRol()}
+                </Link>
               </div>
             </div>
           </li>
@@ -274,11 +224,6 @@ export default function Navbar() {
               data-dropdown-placement="bottom"
             >
               <span className="sr-only">Open user menu</span>
-              {/* <img
-                className="w-8 h-8 rounded-full"
-                src={setting}
-                alt="user photo"
-              /> */}
               <svg
                 className="w-8 h-8 rounded-full"
                 viewBox="0 0 24 24"
@@ -311,43 +256,6 @@ export default function Navbar() {
               id="user-dropdown"
             >
               {renderSession()}
-              {/* <div className="px-4 py-3">
-                <span className="block text-sm text-gray-900 dark:text-white">
-                  Admin
-                </span>
-                <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">
-                  admin@gmail.com
-                </span>
-              </div>
-
-              <ul className="py-2" aria-labelledby="user-menu-button">
-                <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                  >
-                    Profile
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                  >
-                    Settings
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    onClick={logoutUser}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                  >
-                    Sign out
-                  </a>
-                </li>
-              </ul> */}
-
               <div className=" px-4 py-2 text-sm">
                 <div className="flex justify-between">
                   <p>Dark</p>
@@ -356,8 +264,8 @@ export default function Navbar() {
                     htmlFor="darkmode"
                   >
                     <input
-                      onChange={changeMode}
-                      checked={darkMode}
+                      onChange={darkModeProps.changeMode}
+                      checked={darkModeProps.darkMode}
                       className="peer sr-only"
                       type="checkbox"
                       id="darkmode"
@@ -369,7 +277,7 @@ export default function Navbar() {
                 <div className="flex justify-between mt-1">
                   <span>System</span>
                   <button
-                    onClick={SystemMode}
+                    onClick={darkModeProps.systemMode}
                     className="ml-3.5 mr-3.5 cursor-pointer text-gray-900 hover:text-blue-700 dark:text-white dark:hover:text-blue-700 dark:hover:bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                   >
                     <svg
