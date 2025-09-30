@@ -1,4 +1,4 @@
-import type { CategoryCreate, CategoryUpdate } from '../types.js'
+import type { CategoryCreate, DataUpdate } from '../types.js'
 import { connectDB } from './connect.js'
 
 export class CategoryModel {
@@ -63,7 +63,7 @@ export class CategoryModel {
 
   //
 
-  static async update({ id, field, value }: CategoryUpdate) {
+  static async update({ id, field, value }: DataUpdate) {
     const client = await connectDB()
     field = field + ', updated_at = $' + (value.length + 1)
     value.push(new Date())

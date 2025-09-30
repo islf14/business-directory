@@ -9,7 +9,7 @@ const LayoutClient = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (getRol() != 'client') {
+    if (getRol().toLowerCase() != 'client') {
       navigate('/')
     }
   }, [getRol, navigate])

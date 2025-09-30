@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
-import AuthUser from './AuthUser'
 import { useNavigate } from 'react-router'
 import Api from '../Api'
 import { Link } from 'react-router'
 import { useFormInput } from '../components/UseFormInput'
+import { getToken, saveToken } from './UserSession'
 
 const Login = () => {
   console.log('declare Login')
-  const { setToken, getToken } = AuthUser()
   const emailProps = useFormInput('')
   const passwordProps = useFormInput('')
   const [message, setMessage] = useState('')
@@ -17,15 +16,19 @@ const Login = () => {
     if (getToken()) {
       navigate('/')
     }
-  }, [getToken, navigate])
+  }, [navigate])
 
   const submitLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     Api.getLogin({ email: emailProps.value, password: passwordProps.value })
       .then(({ data }) => {
         if (data && data.token && data.user && data.rol) {
-          setToken(data.token, data.user, data.rol.name)
-          navigate(`/${data.rol.name.toLowerCase()}`)
+          saveToken(data.token, data.user, data.rol.name)
+          if (data.rol.name === 'Admin' || data.rol.name === 'Client') {
+            navigate(`/${data.rol.name.toLowerCase()}`)
+          } else {
+            navigate('/')
+          }
         } else {
           setMessage('Incomplete session')
         }

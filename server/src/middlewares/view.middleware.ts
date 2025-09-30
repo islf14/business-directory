@@ -24,7 +24,7 @@ export async function viewMiddleware(
     if (result.length > 0) {
       return next()
     } else {
-      return res.status(401).json({ message: 'Unauthorized, no permits' })
+      return res.status(403).json({ message: 'Unauthorized, no permits' })
     }
   } catch (e: unknown) {
     let m: string = ''

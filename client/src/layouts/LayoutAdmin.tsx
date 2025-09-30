@@ -10,7 +10,7 @@ const LayoutAdmin = () => {
   const { getRol } = AuthUser()
   const navigate = useNavigate()
   useEffect(() => {
-    if (getRol() != 'admin') {
+    if (getRol().toLowerCase() != 'admin') {
       navigate('/')
     }
   }, [getRol, navigate])

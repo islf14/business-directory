@@ -18,3 +18,7 @@ export const validateRegister = (data: any) => {
 export const validateLogin = (data: any) => {
   return Login.parse(data)
 }
+
+export const validatePartialUser = (data: any) => {
+  return Register.partial().parse(data)
+}

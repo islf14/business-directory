@@ -1,11 +1,11 @@
-import AuthUser from '../pageauth/AuthUser'
-// import Api from '../Api'
 import { useRef } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { ListenDark } from './ListenDark'
+import { getRol, getToken, getUser } from '../pageauth/UserSession'
 
 export default function Navbar() {
   console.log('declare NavBar')
+  const navigate = useNavigate()
   //
   const menuUser = useRef<HTMLDivElement | null>(null)
   const menuButton = useRef<HTMLButtonElement | null>(null)
@@ -54,13 +54,13 @@ export default function Navbar() {
   //
   //
 
-  const { getToken, getRol, getLogout } = AuthUser()
   // const token = { headers: { Authorization: `Bearer ${getToken()}` } }
 
   const logoutUser = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault()
     toggleMenu()
-    getLogout()
+    sessionStorage.clear()
+    navigate('/login')
   }
 
   //
@@ -78,10 +78,10 @@ export default function Navbar() {
         <>
           <div className="px-4 py-3">
             <span className="block text-sm text-gray-900 dark:text-white">
-              Admin
+              {getRol()}
             </span>
             <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">
-              admin@gmail.com
+              {getUser().email}
             </span>
           </div>
 

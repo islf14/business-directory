@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import Api from '../Api'
-// import AuthUser from '../pageauth/AuthUser'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { getToken } from '../pageauth/UserSession'
 
 type User = {
@@ -11,21 +10,55 @@ type User = {
 
 const UserAll = () => {
   console.log('in declare UserAll')
-  // const { getToken } = AuthUser()
+  const navigate = useNavigate()
   const [users, setUsers] = useState<User[]>([])
   const token = useMemo(
     () => ({ headers: { Authorization: `Bearer ${getToken()}` } }),
     []
   )
   useEffect(() => {
-    console.log('in useEffect')
     const getUserAll = async () => {
-      const response = await Api.getUserAll(token)
-      console.log(response)
-      setUsers(response.data)
+      try {
+        const data = await Api.getUserAll(token)
+        console.log(data)
+        setUsers(data.data)
+      } catch (error) {
+        if (
+          error &&
+          typeof error === 'object' &&
+          'status' in error &&
+          error.status === 401
+        ) {
+          if (
+            error &&
+            typeof error === 'object' &&
+            'response' in error &&
+            error.response &&
+            typeof error.response === 'object' &&
+            'data' in error.response &&
+            error.response.data &&
+            typeof error.response.data === 'object' &&
+            'message' in error.response.data
+          ) {
+            console.error(error.response.data.message)
+          }
+
+          sessionStorage.clear()
+          navigate('/login')
+        }
+
+        if (
+          error &&
+          typeof error === 'object' &&
+          'status' in error &&
+          error.status === 403
+        ) {
+          navigate('/')
+        }
+      }
     }
     getUserAll()
-  }, [token])
+  }, [token, navigate])
 
   return (
     <div className="p-4 md:ml-56">
@@ -59,12 +92,14 @@ const UserAll = () => {
                           {user.id}
                         </th>
                         <td className="px-6 py-4">{user.name}</td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 ">
                           <Link
                             to={`/admin/user/edit/${user.id}`}
-                            className="btn btn-primary"
+                            className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
                           >
-                            Edit
+                            <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
+                              Edit
+                            </span>
                           </Link>
                         </td>
                       </tr>

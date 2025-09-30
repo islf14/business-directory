@@ -16,7 +16,7 @@ export type CategoryCreate = {
   value: (number | string | Date)[]
 }
 
-export type CategoryUpdate = {
+export type DataUpdate = {
   id: number
   field: string
   value: (number | string | Date)[]

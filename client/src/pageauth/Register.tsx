@@ -57,7 +57,7 @@ const Register = () => {
                   onChange={(e) => setName(e.target.value)}
                   autoComplete="name"
                   className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="user@email.com"
+                  placeholder="User"
                   required
                 />
               </div>
@@ -92,6 +92,8 @@ const Register = () => {
                   name="password"
                   id="password"
                   placeholder="••••••••"
+                  minLength={4}
+                  maxLength={50}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -109,6 +111,8 @@ const Register = () => {
                   type="password"
                   id="repeat-password"
                   placeholder="••••••••"
+                  minLength={4}
+                  maxLength={50}
                   className="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light"
                   required
                 />

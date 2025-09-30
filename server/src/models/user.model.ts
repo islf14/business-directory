@@ -1,4 +1,4 @@
-import type { HashAuth } from '../types.js'
+import type { DataUpdate, HashAuth } from '../types.js'
 import { connectDB } from './connect.js'
 
 export class UserModel {
@@ -56,6 +56,48 @@ export class UserModel {
       if (e instanceof Error) m = e.message
       console.log(m)
       throw new Error('error finding: ' + m)
+    } finally {
+      await client.end()
+    }
+  }
+
+  //
+
+  static async find({ id }: { id: number }) {
+    const client = await connectDB()
+    try {
+      const text =
+        'SELECT id, name, email, created_at, updated_at FROM public.users WHERE id = $1'
+      const values = [id]
+      const res = await client.query(text, values)
+      return res.rows[0]
+    } catch (e: unknown) {
+      let m
+      if (e instanceof Error) m = e.message
+      console.log(m)
+      throw new Error('error finding: ' + m)
+    } finally {
+      await client.end()
+    }
+  }
+
+  //
+
+  static async update({ id, field, value }: DataUpdate) {
+    const client = await connectDB()
+    field = field + ', updated_at = $' + (value.length + 1)
+    value.push(new Date())
+    try {
+      const text = `UPDATE public.users SET ${field} WHERE id = $${
+        value.length + 1
+      } RETURNING *`
+      const values = [...value, id]
+      const res = await client.query(text, values)
+      return res.rows[0]
+    } catch (e: unknown) {
+      let m
+      if (e instanceof Error) m = e.message
+      throw new Error('update error: ' + m)
     } finally {
       await client.end()
     }
