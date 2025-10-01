@@ -1,6 +1,23 @@
+import { useRef } from 'react'
 import { NavLink } from 'react-router'
 
 export default function Aside() {
+  const asideButton = useRef<HTMLButtonElement | null>(null)
+  const sidebar = useRef<HTMLElement | null>(null)
+  const toggleAside = () => {
+    sidebar.current?.classList.toggle('-translate-x-full')
+  }
+  // listen for click outside the aside button
+  document.addEventListener('mousedown', closeOpenMenus)
+  function closeOpenMenus(e: MouseEvent) {
+    if (
+      !asideButton.current?.contains(e.target as Node) &&
+      !sidebar.current?.contains(e.target as Node)
+    ) {
+      sidebar.current?.classList.add('-translate-x-full')
+    }
+  }
+
   return (
     <>
       <button
@@ -8,6 +25,8 @@ export default function Aside() {
         data-drawer-toggle="default-sidebar"
         aria-controls="default-sidebar"
         type="button"
+        onClick={toggleAside}
+        ref={asideButton}
         className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
       >
         <span className="sr-only">Open sidebar</span>
@@ -28,17 +47,18 @@ export default function Aside() {
 
       <aside
         id="default-sidebar"
-        className="fixed top-20 left-0 z-40 w-56 h-2/4 transition-transform -translate-x-full md:translate-x-0"
+        ref={sidebar}
+        className="fixed top-32 md:top-20 left-0 z-40 w-56 h-2/4 transition-transform -translate-x-full md:translate-x-0"
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
           <ul className="space-y-2 font-medium">
             <li>
               <NavLink
-                to={`/admin`}
+                to={`/admin/home`}
                 className={({ isActive }) =>
                   isActive
-                    ? 'flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group active'
+                    ? 'flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group bg-gray-100 dark:bg-gray-700'
                     : 'flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group'
                 }
               >
@@ -60,7 +80,7 @@ export default function Aside() {
                 to={`/admin/user`}
                 className={({ isActive }) =>
                   isActive
-                    ? 'flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group active'
+                    ? 'flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group bg-gray-100 dark:bg-gray-700'
                     : 'flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group'
                 }
               >
@@ -82,7 +102,7 @@ export default function Aside() {
                 to={`/admin/category`}
                 className={({ isActive }) =>
                   isActive
-                    ? 'flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group active'
+                    ? 'flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group bg-gray-100 dark:bg-gray-700'
                     : 'flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group'
                 }
               >
@@ -104,7 +124,7 @@ export default function Aside() {
                 to={`/admin/company`}
                 className={({ isActive }) =>
                   isActive
-                    ? 'flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group active'
+                    ? 'flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group bg-gray-100 dark:bg-gray-700'
                     : 'flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group'
                 }
               >

@@ -19,6 +19,8 @@ import CategoryAll from './pageadmin/CategoryAll'
 import CategoryStore from './pageadmin/CategoryStore'
 import CategoryUpdate from './pageadmin/CategoryUpdate'
 import CompanyAll from './pageadmin/CompanyAll'
+import About from './pagepublic/About'
+import Contact from './pagepublic/Contact'
 
 function RouterApp() {
   return (
@@ -28,10 +30,12 @@ function RouterApp() {
           <Route index element={<PageHome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
         </Route>
         <Route element={<ProtectedRoutes />}>
           <Route path="/admin" element={<LayoutAdmin />}>
-            <Route index element={<PanelAdmin />} />
+            <Route index path="home" element={<PanelAdmin />} />
             <Route path="user" element={<UserAll />} />
             <Route path="user/edit/:id" element={<UserUpdate />} />
             <Route path="category" element={<CategoryAll />} />
