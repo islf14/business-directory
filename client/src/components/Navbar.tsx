@@ -4,7 +4,6 @@ import { ListenDark } from './ListenDark'
 import { getRol, getToken, getUser } from '../pageauth/UserSession'
 
 export default function Navbar() {
-  console.log('declare NavBar')
   const navigate = useNavigate()
   //
   const menuUser = useRef<HTMLDivElement | null>(null)
@@ -17,7 +16,7 @@ export default function Navbar() {
   // listen for click outside the open menu
   document.addEventListener('mousedown', closeOpenMenus)
   function closeOpenMenus(e: MouseEvent) {
-    console.log('click')
+    // console.log('click')
     if (
       !menuButton.current?.contains(e.target as Node) &&
       !menuUser.current?.contains(e.target as Node)

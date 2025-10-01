@@ -2,18 +2,16 @@ import { useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { Outlet, useNavigate } from 'react-router'
-import AuthUser from '../pageauth/AuthUser'
 import Aside from '../components/Aside'
+import { getRol } from '../pageauth/UserSession'
 
 const LayoutAdmin = () => {
-  console.log('declare LayoutAdmin')
-  const { getRol } = AuthUser()
   const navigate = useNavigate()
   useEffect(() => {
     if (getRol().toLowerCase() != 'admin') {
       navigate('/')
     }
-  }, [getRol, navigate])
+  }, [navigate])
 
   return (
     <>

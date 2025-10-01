@@ -2,14 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import Api from '../Api'
 import { Link, useNavigate } from 'react-router'
 import { getToken } from '../pageauth/UserSession'
-
-type User = {
-  id: string
-  name: string
-}
+import type { User } from '../types'
 
 const UserAll = () => {
-  console.log('in declare UserAll')
   const navigate = useNavigate()
   const [users, setUsers] = useState<User[]>([])
   const token = useMemo(
@@ -20,7 +15,6 @@ const UserAll = () => {
     const getUserAll = async () => {
       try {
         const data = await Api.getUserAll(token)
-        console.log(data)
         setUsers(data.data)
       } catch (error) {
         if (

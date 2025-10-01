@@ -1,17 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-// import AuthUser from '../pageauth/AuthUser'
 import { Link, useNavigate } from 'react-router'
 import Api from '../Api'
 import { getToken } from '../pageauth/UserSession'
-
-type Category = {
-  id: number
-  name: string
-  ord: number
-}
+import type { Category } from '../types'
 
 const CategoryAll = () => {
-  console.log('in declare CategoryAll')
   const navigate = useNavigate()
   const [categories, setCategories] = useState<Category[]>([])
   const token = useMemo(
@@ -20,16 +13,13 @@ const CategoryAll = () => {
   )
 
   const getCategoryAll = useCallback(async () => {
-    console.log('in usecallback')
     await Api.getCategoryAll(token)
       .then(({ data }) => {
-        console.log(data)
         if (typeof data !== 'string') {
           try {
             const type = Object.prototype.toString.call(data)
             if (type === '[object Object]' || type === '[object Array]') {
               setCategories(data)
-              console.log('Loaded categories')
             }
           } catch (err) {
             console.log(err)
@@ -46,20 +36,18 @@ const CategoryAll = () => {
   }, [token, navigate])
 
   useEffect(() => {
-    console.log('in useEffect')
     getCategoryAll()
   }, [getCategoryAll])
 
   const deleteCategoryById = async (id: number) => {
-    const isDelete = window.confirm('Borrar Categoría?')
+    const isDelete = window.confirm('Delete Category?')
     if (isDelete) {
       await Api.getCategoryDelete(id, token)
-        .then((response) => {
-          console.log(response)
-          if (response.status == 200) console.log('Eliminado correctamente')
+        .then((data) => {
+          if (data.status == 204) console.log('Deleted successfully')
         })
-        .catch((error) => {
-          console.log(error)
+        .catch(({ response }) => {
+          console.log(response)
         })
       getCategoryAll()
     }

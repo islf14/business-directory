@@ -4,9 +4,8 @@ const Category = z.object({
   name: z.string().min(2).max(100),
   slug: z.string().optional(),
   description: z.string().min(6),
-  menu: z.number().optional(),
-  ord: z.number(),
-  photo_url: z.url().optional()
+  menu: z.coerce.number().optional(),
+  ord: z.coerce.number()
 })
 export const validateCategory = (data: any) => {
   return Category.parse(data)

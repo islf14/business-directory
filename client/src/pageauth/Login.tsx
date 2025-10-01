@@ -6,7 +6,6 @@ import { useFormInput } from '../components/UseFormInput'
 import { getToken, saveToken } from './UserSession'
 
 const Login = () => {
-  console.log('declare Login')
   const emailProps = useFormInput('')
   const passwordProps = useFormInput('')
   const [message, setMessage] = useState('')

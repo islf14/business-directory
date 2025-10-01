@@ -7,7 +7,7 @@ export class CategoryModel {
   static async findAll() {
     const client = await connectDB()
     try {
-      const text = 'SELECT * FROM public.category'
+      const text = 'SELECT * FROM public.category ORDER BY id'
       const res = await client.query(text)
       return res.rows
     } catch (e: unknown) {
@@ -29,7 +29,7 @@ export class CategoryModel {
     value.push(new Date(), new Date())
 
     try {
-      const text = `INSERT INTO public.category(${field})	VALUES (${nval}) RETURNING *`
+      const text = `INSERT INTO public.category(${field})	VALUES (${nval})`
       const values = [...value]
       const res = await client.query(text, values)
       return res.rows[0]

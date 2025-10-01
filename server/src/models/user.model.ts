@@ -8,7 +8,7 @@ export class UserModel {
     const client = await connectDB()
     try {
       const text =
-        'SELECT id, name, email, created_at, updated_at FROM public.users'
+        'SELECT id, name, email, created_at, updated_at FROM public.users ORDER BY id'
       const res = await client.query(text)
       return res.rows
     } catch (e: unknown) {

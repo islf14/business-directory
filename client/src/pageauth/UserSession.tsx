@@ -1,5 +1,4 @@
 export function getToken() {
-  console.log('in getToken')
   const tokenString = sessionStorage.getItem('token')
   if (tokenString) {
     const token = JSON.parse(tokenString)

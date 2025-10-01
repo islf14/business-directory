@@ -3,12 +3,10 @@ import { useNavigate, useParams } from 'react-router'
 import Api from '../Api'
 import { Link } from 'react-router'
 import { getToken } from '../pageauth/UserSession'
-// import AuthUser from '../pageauth/AuthUser'
+import type { UserUpdateData } from '../types'
 
 const UserUpdate = () => {
-  console.log('in declare UserUpdate')
   const navigate = useNavigate()
-  // const { getToken } = AuthUser()
   const { id } = useParams()
   const [name, setName] = useState<string>('')
   const [email, setEmail] = useState<string>('')
@@ -25,10 +23,8 @@ const UserUpdate = () => {
     const getUserById = async () => {
       Api.getUserById(Number(id), token)
         .then(({ data }) => {
-          console.log(data)
           setName(data.name)
           setEmail(data.email)
-          // setAprobado(data.aprobado)
         })
         .catch(({ response }) => {
           console.error(response.data.message)
@@ -44,12 +40,6 @@ const UserUpdate = () => {
   const submitUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    type UserUpdateData = {
-      name: string
-      email: string
-      password?: string
-    }
-
     let data: UserUpdateData = {
       name,
       email
@@ -60,7 +50,6 @@ const UserUpdate = () => {
         password
       }
     }
-    console.log(data)
     Api.getUserUpdate(Number(id), data, token)
       .then((data) => {
         if (data.status == 200) {

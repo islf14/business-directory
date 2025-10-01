@@ -1,81 +1,119 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
-import AuthUser from '../pageauth/AuthUser'
-import Api from '../Api'
+import Api, { base_api_url } from '../Api'
+import { getToken } from '../pageauth/UserSession'
+import type { CategoryData } from '../types'
 
 const CategoryUpdate = () => {
   const navigate = useNavigate()
-  const { getToken } = AuthUser()
   const { id } = useParams()
-  const [nombre, setNombre] = useState('')
-  const [description, setDescripcion] = useState('')
-  const [orden, setOrden] = useState('')
-  const [menu, setMenu] = useState(false)
-  const [verfoto, setVerfoto] = useState('foto.jpg')
-  const [urlfoto, setUrlfoto] = useState('')
-  const token = useMemo(
-    () => ({ headers: { Authorization: `Bearer ${getToken()}` } }),
-    [getToken]
+  const [name, setName] = useState<string>('')
+  const [description, setDescription] = useState<string>('')
+  const [ord, setOrd] = useState<number>(0)
+  const [menu, setMenu] = useState<boolean>(false)
+  const [photo, setPhoto] = useState<File>()
+  const [photo_url, setPhoto_url] = useState('foto.jpg')
+  const [message, setMessage] = useState<string>('')
+  const header = useMemo(
+    () => ({
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    }),
+    []
   )
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
-    const reader = new FileReader()
     if (files) {
-      reader.readAsDataURL(files[0])
-      reader.onload = (e) => {
-        if (e.target && typeof e.target.result === 'string') {
-          setUrlfoto(e.target.result)
-        }
-      }
+      setPhoto(files[0])
     }
   }
 
   useEffect(() => {
     const getCategoryById = async () => {
-      Api.getCategoryById(Number(id), token).then(({ data }) => {
-        // console.log(data)
-        setNombre(data.nombre)
-        setDescripcion(data.description)
-        setOrden(data.orden)
-        setMenu(data.menu)
-        setVerfoto(data.urlfoto)
-      })
+      Api.getCategoryById(Number(id), header)
+        .then(({ data }) => {
+          setName(data.name)
+          setDescription(data.description)
+          if (data.ord !== null) {
+            setOrd(Number(data.ord))
+          }
+          if (data.menu) {
+            if (data.menu === 1) {
+              setMenu(true)
+            } else {
+              setMenu(false)
+            }
+          }
+          if (data.photo_url) {
+            setPhoto_url(data.photo_url.slice(6))
+          }
+        })
+        .catch(({ response }) => {
+          console.error(response.data.message)
+          setMessage(response.data.message)
+          if (response.status === 401) {
+            sessionStorage.clear()
+            navigate('/login')
+          }
+        })
     }
     getCategoryById()
-  }, [id, token])
+  }, [id, header, navigate])
 
   const submitUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // console.log({nombre, description, orden, menu, urlfoto});
-    await Api.getCategoryUpdate(
-      Number(id),
-      { nombre, description, orden, menu, urlfoto },
-      token
-    )
-      .then((response) => {
-        if (response.status == 200) console.log('Actualizado correctamente')
+
+    let data: CategoryData = {
+      name,
+      description,
+      ord
+    }
+    let me
+    if (menu) me = 1
+    else me = 0
+    data = { ...data, menu: me }
+    if (photo) {
+      data = { ...data, photo }
+    }
+
+    await Api.getCategoryUpdate(Number(id), data, header)
+      .then((data) => {
+        if (data.status == 200) console.log('Updated successfully')
+        navigate('/admin/category')
       })
-      .catch((error) => {
-        console.log(error)
+      .catch(({ response }) => {
+        console.log(response)
+        if (typeof response.data.message === 'string') {
+          setMessage(response.data.message)
+        } else {
+          setMessage(response.data.message[0].message)
+        }
+        if (response.status === 401) {
+          sessionStorage.clear()
+          navigate('/login')
+        }
       })
-    navigate('/admin/category')
   }
 
   return (
     <div className="p-4 md:ml-56">
       <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-70">
+        <div className="text-lg text-gray-900 dark:text-white mb-4">
+          Update category
+        </div>
         <div className="">
           <form action="" onSubmit={submitUpdate}>
             <div className="grid md:grid-cols-3 md:gap-6">
               <div className="relative z-0 w-full mb-5 group">
-                <label className="inline-flex items-center mb-5 cursor-pointer">
+                <label className="flex items-center justify-center mb-5 cursor-pointer">
                   <input
                     checked={menu}
                     onChange={() => setMenu(!menu)}
                     id="menu"
                     type="checkbox"
-                    value=""
                     className="sr-only peer"
                   />
                   <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
@@ -85,64 +123,93 @@ const CategoryUpdate = () => {
                 </label>
               </div>
               <div className="relative z-0 w-full mb-5 group">
-                <label htmlFor="name">Name</label>
+                <label
+                  htmlFor="name"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Name
+                </label>
                 <input
                   type="text"
                   id="name"
                   name="name"
                   className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
+                  value={name}
+                  autoComplete="name"
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
               <div className="relative z-0 w-full mb-5 group">
-                <label htmlFor="order">Order</label>
+                <label
+                  htmlFor="order"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Order
+                </label>
                 <input
                   type="number"
                   name="order"
                   id="order"
                   className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  value={orden}
-                  onChange={(e) => setOrden(e.target.value)}
+                  value={ord}
+                  onChange={(e) => setOrd(Number(e.target.value))}
                 />
               </div>
             </div>
-            <div className="mt-3">
-              <label htmlFor="">Descripción</label>
+            <div className="mb-4">
+              <label
+                htmlFor="description"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Description
+              </label>
               <textarea
-                name=""
-                id=""
+                name="description"
+                id="description"
+                minLength={6}
                 className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 value={description}
-                onChange={(e) => setDescripcion(e.target.value)}
+                onChange={(e) => setDescription(e.target.value)}
+                required
               ></textarea>
             </div>
-            <div className="mt-3">
-              <label htmlFor="">Imagen:</label>
+            <div className="mb-4">
+              <label
+                htmlFor="image"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Image
+              </label>
               <img
-                src={'/img/categoria/' + verfoto}
+                src={base_api_url + photo_url}
                 alt=""
                 className="img-fluid img-thumbnail"
               />
               <input
                 type="file"
+                id="image"
+                name="image"
                 className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 onChange={(e) => handleInputChange(e)}
               />
             </div>
-            <div className="btn-group">
+            <p className="text-red-600">{message}</p>
+            <div className="mt-4">
               <Link
-                className="btn btn-secondary"
+                className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                 to={'..'}
                 onClick={(e) => {
                   e.preventDefault()
                   navigate(-1)
                 }}
               >
-                Atras
+                Back
               </Link>
-              <button type="submit" className="btn btn-primary">
-                Actualizar Categoría
+              <button
+                type="submit"
+                className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+              >
+                Update Category
               </button>
             </div>
           </form>

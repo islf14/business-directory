@@ -13,6 +13,8 @@ const port = process.env.PORT ?? 3000
 app.use(corsMiddleware())
 app.use(json())
 app.use(cookieParser())
+app.use(express.static('public'))
+
 app.use('/', authRoute)
 app.use('/user', authMiddleware, userRoute)
 app.use('/category', authMiddleware, categoryRoute)

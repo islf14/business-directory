@@ -24,11 +24,11 @@ export class CategoryController {
   //
 
   async store(req: Request, res: Response) {
+    // validate data and params
     if (!req.body) {
       res.status(400).json({ message: 'please enter valid values' })
       return
     }
-
     let valuesInput
     try {
       valuesInput = validateCategory(req.body)
@@ -36,12 +36,12 @@ export class CategoryController {
       let m: string = ''
       if (e instanceof Error) m = e.message
       console.log('error validating values')
-      res.status(400).json({ error: JSON.parse(m || '{}') })
+      res.status(400).json({ message: JSON.parse(m || '{}') })
       return
     }
-
-    const { name, description, slug, menu, ord, photo_url } = valuesInput
-
+    // data and file url to save
+    const photo = req.file?.path
+    const { name, description, slug, menu, ord } = valuesInput
     let field = ''
     let nval = ''
     let value: (number | string)[] = []
@@ -65,15 +65,15 @@ export class CategoryController {
       field += 'menu'
       value.push(menu)
     }
-    if (ord) {
+    if (ord !== undefined) {
       if (field) field += ', '
       field += 'ord'
       value.push(ord)
     }
-    if (photo_url) {
+    if (photo) {
       if (field) field += ', '
       field += 'photo_url'
-      value.push(photo_url)
+      value.push(photo)
     }
     for (let i = 1; i <= value.length; i++) {
       if (nval) nval += ', '
@@ -128,11 +128,12 @@ export class CategoryController {
       let m: string = ''
       if (e instanceof Error) m = e.message
       console.log('error validating values')
-      res.status(400).json({ error: JSON.parse(m || '{}') })
+      res.status(400).json({ message: JSON.parse(m || '{}') })
       return
     }
 
-    const { name, description, slug, menu, ord, photo_url } = valuesInput
+    const photo = req.file?.path
+    const { name, description, slug, menu, ord } = valuesInput
 
     let field = ''
     let count = 0
@@ -167,11 +168,11 @@ export class CategoryController {
       field += `ord = $${count}`
       value.push(ord)
     }
-    if (photo_url) {
+    if (photo) {
       count++
       if (field) field += ', '
       field += `photo_url = $${count}`
-      value.push(photo_url)
+      value.push(photo)
     }
 
     try {

@@ -1,9 +1,7 @@
 import { Navigate, Outlet } from 'react-router'
-import AuthUser from './AuthUser'
+import { getToken } from './UserSession'
 
 const ProtectedRoutes = () => {
-  console.log('declare ProtectedRoutes')
-  const { getToken } = AuthUser()
   if (!getToken()) {
     return <Navigate to={'/login'} />
   }

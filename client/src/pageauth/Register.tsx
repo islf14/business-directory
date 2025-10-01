@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import Api from '../Api'
 import { useNavigate } from 'react-router'
-import AuthUser from './AuthUser'
+import { getToken } from './UserSession'
 
 const Register = () => {
-  const { getToken } = AuthUser()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -14,7 +13,7 @@ const Register = () => {
     if (getToken()) {
       navigate('/')
     }
-  }, [getToken, navigate])
+  }, [navigate])
 
   // width button e: React.MouseEvent<HTMLButtonElement>
   const submitRegistro = async (e: React.FormEvent<HTMLFormElement>) => {
