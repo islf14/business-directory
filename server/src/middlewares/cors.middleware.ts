@@ -1,7 +1,11 @@
 import cors from 'cors'
 import type { StaticOrigin } from '../types.js'
 
-const ACCEPTED_ORIGINS = ['http://localhost:5173', 'http://localhost:4173']
+const ACCEPTED_ORIGINS = [
+  'http://localhost:5173',
+  'http://localhost:4173',
+  `http://localhost:${process.env.PORT ?? 3000}`
+]
 
 export const corsMiddleware = (whitelist: string[] = ACCEPTED_ORIGINS) => {
   return cors({

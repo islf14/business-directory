@@ -1,31 +1,32 @@
 import axios from 'axios'
 
-// const base_api_url = `${window.location.origin}/api`
+// export const base_api_url = `${window.location.origin}`
 export const base_api_url = 'http://localhost:3003'
 
 export default {
   //AUTH
-  getRegister: (data: object) => axios.post(`${base_api_url}/register`, data),
-  getLogin: (data: object) => axios.post(`${base_api_url}/login`, data),
+  getRegister: (data: object) =>
+    axios.post(`${base_api_url}/auth/register`, data),
+  getLogin: (data: object) => axios.post(`${base_api_url}/auth/login`, data),
   getLogout: (data: object, token: object) =>
     axios.post(`${base_api_url}/logout`, data, token),
 
   //ROL ADMIN
-  getUserAll: (token: object) => axios.get(`${base_api_url}/user`, token),
+  getUserAll: (token: object) => axios.get(`${base_api_url}/users`, token),
   getUserById: (id: number, token: object) =>
-    axios.get(`${base_api_url}/user/${id}`, token),
+    axios.get(`${base_api_url}/users/${id}`, token),
   getUserUpdate: (id: number, data: object, token: object) =>
-    axios.put(`${base_api_url}/user/${id}`, data, token),
+    axios.put(`${base_api_url}/users/${id}`, data, token),
 
   //CATEGORY
   getCategoryAll: (token: object) =>
-    axios.get(`${base_api_url}/category`, token),
+    axios.get(`${base_api_url}/categories`, token),
   getCategoryStore: (data: object, token: object) =>
-    axios.post(`${base_api_url}/category`, data, token),
+    axios.post(`${base_api_url}/categories`, data, token),
   getCategoryById: (id: number, token: object) =>
-    axios.get(`${base_api_url}/category/${id}`, token),
+    axios.get(`${base_api_url}/categories/${id}`, token),
   getCategoryUpdate: (id: number, data: object, token: object) =>
-    axios.put(`${base_api_url}/category/${id}`, data, token),
+    axios.put(`${base_api_url}/categories/${id}`, data, token),
   getCategoryDelete: (id: number, token: object) =>
-    axios.delete(`${base_api_url}/category/${id}`, token)
+    axios.delete(`${base_api_url}/categories/${id}`, token)
 }
